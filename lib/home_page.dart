@@ -37,29 +37,21 @@ class PortfolioPage extends StatefulWidget {
 }
 
 class _PortfolioPageState extends State<PortfolioPage> {
-  // ----------------------------------------------------------
   // SUPABASE
-  // ----------------------------------------------------------
 
   final SupabaseClient supabase = Supabase.instance.client;
 
   bool isLoading = true;
 
-  // ----------------------------------------------------------
   // COLORS
-  // ----------------------------------------------------------
 
   final Color primaryColor = const Color(0xFF6941C6);
   final Color darkColor = const Color(0xFF17152B);
   final Color backgroundColor = const Color(0xFFF7F7FB);
 
-  // ----------------------------------------------------------
   // BUSINESS DETAILS
-  // Default values are displayed if Supabase fields are empty.
-  // ----------------------------------------------------------
 
   String businessName = 'BIASHARA BUNIFU';
-
   String tagline = 'Tunabadilisha Mawazo Kuwa Uhalisia';
 
   String description =
@@ -69,7 +61,6 @@ class _PortfolioPageState extends State<PortfolioPage> {
 
   String phone1 = '+255 700 000 001';
   String phone2 = '+255 700 000 002';
-
   String email = 'info@example.com';
 
   String instagram = '';
@@ -88,45 +79,41 @@ class _PortfolioPageState extends State<PortfolioPage> {
   String whyChooseUs =
       'Tunathamini ubora, ubunifu, kuridhika kwa wateja na matokeo bora katika kila tunachofanya.';
 
-  // ----------------------------------------------------------
   // PROJECT DETAILS
-  // ----------------------------------------------------------
 
   String project1Title = 'Ubunifu wa Kipekee';
-
   String project1Description =
       'Suluhisho za usanifu zenye mvuto na ubora wa kitaalamu.';
 
   String project2Title = 'Suluhisho za Biashara';
-
   String project2Description =
       'Tunasaidia biashara kujijenga na kukuza uwepo wake mtandaoni.';
 
   String project3Title = 'Ubunifu wa Kidijitali';
-
   String project3Description =
       'Suluhisho za kisasa za kidijitali kwa biashara za kisasa.';
 
-  // ----------------------------------------------------------
-  // PROJECT IMAGE URLS
-  // These are fetched from Supabase columns image1, image2,
-  // and image3.
-  // ----------------------------------------------------------
+  // PROJECT IMAGES
 
   String image1Url = '';
   String image2Url = '';
   String image3Url = '';
 
-  // ----------------------------------------------------------
+  // NEW IMAGES
+
+  String image4Url = '';
+  String image5Url = '';
+  String image6Url = '';
+  String image7Url = '';
+
   // RESPONSIVE SCREEN WIDTH
-  // ----------------------------------------------------------
 
   double screenWidth = 360;
 
   bool get isMobile => screenWidth < 750;
 
   double responsiveFont(double originalSize) {
-    final width = screenWidth.clamp(320.0, 1200.0);
+    final width = screenWidth.clamp(320.0, 1200.0).toDouble();
     return (width / 360) * originalSize;
   }
 
@@ -143,7 +130,7 @@ class _PortfolioPageState extends State<PortfolioPage> {
   }
 
   // ==========================================================
-  // FETCH ALL BUSINESS DETAILS FROM SUPABASE
+  // FETCH BUSINESS DETAILS FROM SUPABASE
   // ==========================================================
 
   Future<void> fetchBusinessDetails() async {
@@ -181,7 +168,6 @@ class _PortfolioPageState extends State<PortfolioPage> {
           businessName = getValue('business_name', businessName);
           tagline = getValue('tagline', tagline);
           description = getValue('description', description);
-
           logoUrl = getValue('logo_url', logoUrl);
 
           // CONTACT DETAILS
@@ -189,7 +175,6 @@ class _PortfolioPageState extends State<PortfolioPage> {
           phone1 = getValue('phone1', phone1);
           phone2 = getValue('phone2', phone2);
           email = getValue('email', email);
-
           address = getValue('address', address);
 
           // SOCIAL MEDIA
@@ -245,12 +230,18 @@ class _PortfolioPageState extends State<PortfolioPage> {
             project3Description,
           );
 
-          // PROJECT IMAGES
-          // Empty or NULL database values become empty strings.
+          // EXISTING PROJECT IMAGES
 
           image1Url = getImage('image1');
           image2Url = getImage('image2');
           image3Url = getImage('image3');
+
+          // NEW IMAGES
+
+          image4Url = getImage('image4');
+          image5Url = getImage('image5');
+          image6Url = getImage('image6');
+          image7Url = getImage('image7');
         });
       }
     } catch (e) {
@@ -352,19 +343,12 @@ class _PortfolioPageState extends State<PortfolioPage> {
                   child: Column(
                     children: [
                       buildNavigation(mobile),
-
                       buildHero(mobile),
-
                       buildAbout(mobile),
-
                       buildServices(mobile),
-
                       buildProjects(mobile),
-
                       buildWhyChooseUs(mobile),
-
                       buildContact(mobile),
-
                       buildFooter(mobile),
                     ],
                   ),
@@ -530,69 +514,102 @@ class _PortfolioPageState extends State<PortfolioPage> {
 
   // ==========================================================
   // HERO SECTION
+  // image7 is the background image.
+  // The purple gradient is transparent so image7 is visible.
   // ==========================================================
 
   Widget buildHero(bool mobile) {
     return Container(
       key: sectionKeys['home'],
       width: double.infinity,
-      decoration: BoxDecoration(
-        gradient: LinearGradient(
-          colors: [
-            darkColor,
-            const Color(0xFF30245C),
-            primaryColor,
-          ],
-          begin: Alignment.topLeft,
-          end: Alignment.bottomRight,
-        ),
-      ),
-      padding: EdgeInsets.symmetric(
-        horizontal: mobile ? 25 : 75,
-        vertical: mobile ? 65 : 85,
-      ),
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          final availableWidth = constraints.maxWidth;
+      clipBehavior: Clip.hardEdge,
+      decoration: const BoxDecoration(),
+      child: Stack(
+        children: [
+          // BACKGROUND IMAGE
 
-          final useVerticalLayout = availableWidth < 800;
+          if (image7Url.trim().isNotEmpty)
+            Positioned.fill(
+              child: Image.network(
+                image7Url.trim(),
+                fit: BoxFit.cover,
+                errorBuilder: (context, error, stackTrace) {
+                  debugPrint('Hero background image error: $error');
+                  return const SizedBox.shrink();
+                },
+              ),
+            ),
 
-          if (useVerticalLayout) {
-            return Column(
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                heroContent(
-                  mobile: true,
-                  availableWidth: availableWidth,
-                ),
+          // TRANSPARENT PURPLE OVERLAY
 
-                const SizedBox(height: 45),
-
-                heroVisual(mobile ? 220 : 280),
-              ],
-            );
-          }
-
-          return Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            children: [
-              Expanded(
-                flex: 6,
-                child: heroContent(
-                  mobile: false,
-                  availableWidth: availableWidth * 0.58,
+          Positioned.fill(
+            child: Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    darkColor.withOpacity(0.88),
+                    const Color(0xFF30245C).withOpacity(0.82),
+                    primaryColor.withOpacity(0.78),
+                  ],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
                 ),
               ),
+            ),
+          ),
 
-              const SizedBox(width: 35),
+          // HERO CONTENT
 
-              Expanded(
-                flex: 4,
-                child: heroVisual(320),
-              ),
-            ],
-          );
-        },
+          Padding(
+            padding: EdgeInsets.symmetric(
+              horizontal: mobile ? 25 : 75,
+              vertical: mobile ? 65 : 85,
+            ),
+            child: LayoutBuilder(
+              builder: (context, constraints) {
+                final availableWidth = constraints.maxWidth;
+
+                final useVerticalLayout = availableWidth < 800;
+
+                if (useVerticalLayout) {
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      heroContent(
+                        mobile: true,
+                        availableWidth: availableWidth,
+                      ),
+
+                      const SizedBox(height: 45),
+
+                      heroVisual(mobile ? 155 : 180),
+                    ],
+                  );
+                }
+
+                return Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    Expanded(
+                      flex: 6,
+                      child: heroContent(
+                        mobile: false,
+                        availableWidth: availableWidth * 0.58,
+                      ),
+                    ),
+
+                    const SizedBox(width: 35),
+
+                    Expanded(
+                      flex: 4,
+                      child: heroVisual(200),
+                    ),
+                  ],
+                );
+              },
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -606,19 +623,17 @@ class _PortfolioPageState extends State<PortfolioPage> {
     required double availableWidth,
   }) {
     final titleSize = mobile
-        ? (availableWidth * 0.085).clamp(29.0, 42.0)
-        : (availableWidth * 0.095).clamp(40.0, 66.0);
+        ? (availableWidth * 0.085).clamp(29.0, 42.0).toDouble()
+        : (availableWidth * 0.095).clamp(40.0, 66.0).toDouble();
 
     final subtitleSize = mobile
-        ? (availableWidth * 0.045).clamp(18.0, 23.0)
-        : (availableWidth * 0.047).clamp(21.0, 31.0);
+        ? (availableWidth * 0.045).clamp(18.0, 23.0).toDouble()
+        : (availableWidth * 0.047).clamp(21.0, 31.0).toDouble();
 
     return Column(
       crossAxisAlignment:
       mobile ? CrossAxisAlignment.center : CrossAxisAlignment.start,
       children: [
-        // SMALL LABEL
-
         Container(
           padding: const EdgeInsets.symmetric(
             horizontal: 16,
@@ -645,8 +660,6 @@ class _PortfolioPageState extends State<PortfolioPage> {
 
         const SizedBox(height: 25),
 
-        // BUSINESS NAME
-
         Text(
           businessName,
           textAlign: mobile ? TextAlign.center : TextAlign.start,
@@ -661,8 +674,6 @@ class _PortfolioPageState extends State<PortfolioPage> {
 
         const SizedBox(height: 18),
 
-        // ACCENT LINE
-
         Container(
           width: mobile ? 65 : 85,
           height: 5,
@@ -673,8 +684,6 @@ class _PortfolioPageState extends State<PortfolioPage> {
         ),
 
         const SizedBox(height: 20),
-
-        // TAGLINE
 
         Text(
           tagline,
@@ -688,8 +697,6 @@ class _PortfolioPageState extends State<PortfolioPage> {
         ),
 
         const SizedBox(height: 20),
-
-        // DESCRIPTION
 
         ConstrainedBox(
           constraints: const BoxConstraints(
@@ -708,8 +715,6 @@ class _PortfolioPageState extends State<PortfolioPage> {
         ),
 
         const SizedBox(height: 30),
-
-        // BUTTONS
 
         Wrap(
           alignment: mobile ? WrapAlignment.center : WrapAlignment.start,
@@ -778,7 +783,7 @@ class _PortfolioPageState extends State<PortfolioPage> {
       child: Container(
         width: size,
         height: size,
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(12),
         decoration: BoxDecoration(
           color: Colors.white.withOpacity(0.10),
           borderRadius: BorderRadius.circular(35),
@@ -805,7 +810,7 @@ class _PortfolioPageState extends State<PortfolioPage> {
                 return const Icon(
                   Icons.auto_awesome,
                   color: Colors.white,
-                  size: 100,
+                  size: 65,
                 );
               },
             ),
@@ -813,7 +818,7 @@ class _PortfolioPageState extends State<PortfolioPage> {
               : const Icon(
             Icons.auto_awesome,
             color: Colors.white,
-            size: 100,
+            size: 65,
           ),
         ),
       ),
@@ -938,27 +943,30 @@ class _PortfolioPageState extends State<PortfolioPage> {
                   SizedBox(
                     width: width,
                     child: serviceCard(
-                      Icons.design_services_outlined,
                       'Ubora wa Kitaalamu',
                       'Tunatoa huduma bora kwa kuzingatia kila undani.',
+                      image4Url,
+                      Icons.design_services_outlined,
                     ),
                   ),
 
                   SizedBox(
                     width: width,
                     child: serviceCard(
-                      Icons.lightbulb_outline_rounded,
                       'Suluhisho Bunifu',
                       'Mawazo mapya yanayoifanya biashara yako ijitofautishe.',
+                      image5Url,
+                      Icons.lightbulb_outline_rounded,
                     ),
                   ),
 
                   SizedBox(
                     width: width,
                     child: serviceCard(
-                      Icons.support_agent_rounded,
                       'Huduma kwa Wateja',
                       'Tunawathamini wateja wetu na kuridhika kwao ni kipaumbele.',
+                      image6Url,
+                      Icons.support_agent_rounded,
                     ),
                   ),
                 ],
@@ -970,35 +978,65 @@ class _PortfolioPageState extends State<PortfolioPage> {
     );
   }
 
+  // ==========================================================
+  // SERVICE CARD
+  // Full-width service image, matching project images.
+  // ==========================================================
+
   Widget serviceCard(
-      IconData icon,
       String title,
       String description,
+      String imageUrl,
+      IconData fallbackIcon,
       ) {
+    final hasImage = imageUrl.trim().isNotEmpty;
+
     return Container(
       width: double.infinity,
-      padding: const EdgeInsets.all(28),
+      padding: const EdgeInsets.all(18),
       decoration: BoxDecoration(
-        color: backgroundColor,
-        borderRadius: BorderRadius.circular(18),
-        border: Border.all(
-          color: primaryColor.withOpacity(0.06),
-        ),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(20),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.05),
+            blurRadius: 18,
+            offset: const Offset(0, 6),
+          ),
+        ],
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          Container(
-            width: 68,
-            height: 68,
-            decoration: BoxDecoration(
-              color: primaryColor.withOpacity(0.10),
-              borderRadius: BorderRadius.circular(18),
-            ),
-            child: Icon(
-              icon,
-              color: primaryColor,
-              size: 34,
+          // FULL-WIDTH SERVICE IMAGE
+
+          ClipRRect(
+            borderRadius: BorderRadius.circular(15),
+            child: SizedBox(
+              width: double.infinity,
+              height: 200,
+              child: hasImage
+                  ? Image.network(
+                imageUrl.trim(),
+                fit: BoxFit.cover,
+                loadingBuilder: (context, child, loadingProgress) {
+                  if (loadingProgress == null) {
+                    return child;
+                  }
+
+                  return Container(
+                    color: backgroundColor,
+                    child: const Center(
+                      child: CircularProgressIndicator(),
+                    ),
+                  );
+                },
+                errorBuilder: (context, error, stackTrace) {
+                  debugPrint('Service image error: $error');
+                  return serviceImageFallback(fallbackIcon);
+                },
+              )
+                  : serviceImageFallback(fallbackIcon),
             ),
           ),
 
@@ -1018,6 +1056,23 @@ class _PortfolioPageState extends State<PortfolioPage> {
             style: bodyStyle,
           ),
         ],
+      ),
+    );
+  }
+
+  // FALLBACK WHEN A SERVICE IMAGE IS EMPTY OR CANNOT LOAD
+
+  Widget serviceImageFallback(IconData icon) {
+    return Container(
+      width: double.infinity,
+      height: 200,
+      color: primaryColor.withOpacity(0.09),
+      child: Center(
+        child: Icon(
+          icon,
+          color: primaryColor,
+          size: 65,
+        ),
       ),
     );
   }
@@ -1130,8 +1185,6 @@ class _PortfolioPageState extends State<PortfolioPage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          // PROJECT IMAGE
-
           ClipRRect(
             borderRadius: BorderRadius.circular(15),
             child: SizedBox(
@@ -1162,6 +1215,7 @@ class _PortfolioPageState extends State<PortfolioPage> {
                     error,
                     stackTrace,
                     ) {
+                  debugPrint('Project image error: $error');
                   return projectImageFallback(icon);
                 },
               )
@@ -1171,8 +1225,6 @@ class _PortfolioPageState extends State<PortfolioPage> {
 
           const SizedBox(height: 22),
 
-          // PROJECT TITLE
-
           Text(
             title,
             textAlign: TextAlign.center,
@@ -1180,8 +1232,6 @@ class _PortfolioPageState extends State<PortfolioPage> {
           ),
 
           const SizedBox(height: 12),
-
-          // PROJECT DESCRIPTION
 
           Text(
             description,
@@ -1380,34 +1430,50 @@ class _PortfolioPageState extends State<PortfolioPage> {
           // SOCIAL MEDIA BUTTONS
 
           Wrap(
-            alignment: isMobile ? WrapAlignment.center : WrapAlignment.start,
+            alignment: isMobile
+                ? WrapAlignment.center
+                : WrapAlignment.start,
             spacing: 15,
             children: [
-
               socialButton(
-                FaIcon(FontAwesomeIcons.instagram, color: primaryColor, size: 21),
+                FaIcon(
+                  FontAwesomeIcons.instagram,
+                  color: primaryColor,
+                  size: 21,
+                ),
                 'Instagram',
                 instagram,
               ),
 
               socialButton(
-                FaIcon(FontAwesomeIcons.facebook, color: primaryColor, size: 21),
+                FaIcon(
+                  FontAwesomeIcons.facebook,
+                  color: primaryColor,
+                  size: 21,
+                ),
                 'Facebook',
                 facebook,
               ),
 
               socialButton(
-                FaIcon(FontAwesomeIcons.tiktok, color: primaryColor, size: 21),
+                FaIcon(
+                  FontAwesomeIcons.tiktok,
+                  color: primaryColor,
+                  size: 21,
+                ),
                 'TikTok',
                 tiktok,
               ),
 
               socialButton(
-                FaIcon(FontAwesomeIcons.youtube, color: primaryColor, size: 21),
+                FaIcon(
+                  FontAwesomeIcons.youtube,
+                  color: primaryColor,
+                  size: 21,
+                ),
                 'YouTube',
                 youtube,
               ),
-
             ],
           ),
         ],
